@@ -39,9 +39,9 @@ spec:
         - name: RMQ_QUEUE
           value: {{ .Values.rabbitQueue | default "crawler" }}
         - name: RMQ_USERNAME
-          value: {{ .Values.rabbitUsername | default "crawler" }}
+          value: {{ .Values.rabbitUsername | default "guest" }}
         - name: RMQ_PASSWORD
-          value: {{ .Values.rabbitPassword | default "crawler*Passw0rd" }}
+          value: {{ .Values.rabbitPassword | default "guest" }}
         - name: CHECK_INTERVAL
           value: {{ .Values.checkInterval | default "3600" | quote }}
         - name: EXCLUDE_URLS

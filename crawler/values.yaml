@@ -11,8 +11,8 @@ mongoHost:
 mongoPort: 27017
 rabbitHost:
 rabbitQueue: crawler
-rabbitUsername: crawler
-rabbitPassword: crawler*Passw0rd
+rabbitUsername: guest
+rabbitPassword: guest
 checkInterval: 3600
 excludeUrls: .*github.com
 URL: https://vitkhab.github.io/search_engine_test_site/
