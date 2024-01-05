@@ -1,0 +1,18 @@
+---
+dependencies:
+  - name: crawler
+    version: "1.0.0"
+    repository: "file://../crawler"
+
+  - name: mongodb
+    version: "1.0.0"
+    repository: "file://../mongodb"
+
+  - name: rabbitmq
+    version: "1.0.0"
+    repository: "file://../rabbitmq"
+
+  - name: ui
+    version: "1.0.0"
+    repository: "file://../ui"
+...
