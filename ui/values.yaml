@@ -7,5 +7,8 @@ image:
   repository: registry.otus.kga.spb.ru/otus/search_engine_ui
   tag: latest
 
+ingress:
+  class: gitlab-nginx
+
 mongoHost:
 mongoPort:

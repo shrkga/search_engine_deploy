@@ -6,11 +6,8 @@ metadata:
   labels:
     app: search-engine
     component: ui
-  annotations:
-    kubernetes.io/ingress.provider: nginx
-    nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.ingress.class }}
   rules:
   - host: {{ .Values.ingress.host | default .Release.Name }}
     http:
