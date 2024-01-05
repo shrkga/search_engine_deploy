@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "ui.fullname" . }}
+  labels:
+    app: search-engine
+    component: ui
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-engine
+      component: ui
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: ui-pod
+      labels:
+        app: search-engine
+        component: ui
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        name: ui
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+          name: ui
+          protocol: TCP
+        env:
+        - name: MONGO
+          value: {{ .Values.mongoHost | default (printf "%s-mongodb" .Release.Name) }}
+        - name: MONGO_PORT
+          value: {{ .Values.mongoPort | default "27017" | quote }}

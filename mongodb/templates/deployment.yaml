@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "mongo.fullname" . }}
+  labels:
+    app: search-engine
+    component: mongo
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-engine
+      component: mongo
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: mongo
+      labels:
+        app: search-engine
+        component: mongo
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: mongo:4
+        name: mongo
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/db
+      volumes:
+      - name: mongo-data
+        emptyDir: {}

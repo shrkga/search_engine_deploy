@@ -1,0 +1,27 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "rabbit.fullname" . }}
+  labels:
+    app: search-engine
+    component: rabbit
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: search-engine
+      component: rabbit
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      name: rabbit
+      labels:
+        app: search-engine
+        component: rabbit
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - image: rabbit:3.7-alpine
+        name: rabbit

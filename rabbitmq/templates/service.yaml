@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "rabbit.fullname" . }}
+  labels:
+    app: search-engine
+    component: rabbit
+    release: {{ .Release.Name }}
+spec:
+  ports:
+  - port: 5672
+    protocol: TCP
+    targetPort: 5672
+  selector:
+    app: search-engine
+    component: rabbit
+    release: {{ .Release.Name }}
