@@ -7,8 +7,10 @@ metadata:
     app: search-engine
     component: ui
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+    kubernetes.io/ingress.provider: nginx
+    nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
+  ingressClassName: nginx
   rules:
   - host: {{ .Values.ingress.host | default .Release.Name }}
     http:
@@ -19,4 +21,4 @@ spec:
           service:
             name: {{ template "ui.fullname" . }}
             port:
-              number: 80
+              number: {{ .Values.service.externalPort }}
