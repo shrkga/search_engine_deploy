@@ -40,13 +40,15 @@ stages:
 test:
   stage: test
   variables:
-    GIT_STRATEGY: fetch
+    GIT_STRATEGY: none
   script:
     - env
     - exit 0
   only:
     - triggers
     - branches
+  except:
+    - main
 
 staging:
   stage: staging
