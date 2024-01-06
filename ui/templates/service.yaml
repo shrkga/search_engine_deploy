@@ -11,8 +11,7 @@ spec:
   # type: NodePort
   type: LoadBalancer
   ports:
-  # - port: {{ .Values.service.externalPort }}
-  - port: 80
+  - port: {{ .Values.service.externalPort }}
     protocol: TCP
     targetPort: {{ .Values.service.internalPort }}
   selector:
