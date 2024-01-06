@@ -23,9 +23,8 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - args:
-        - {{ .Values.URL | default "https://vitkhab.github.io/search_engine_test_site/" }}
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        args: {{ .Values.URL | default "https://vitkhab.github.io/search_engine_test_site/" }}
         name: crawler
         ports:
         - containerPort: {{ .Values.service.internalPort }}
