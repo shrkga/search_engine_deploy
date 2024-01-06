@@ -15,4 +15,4 @@ rabbitUsername: guest
 rabbitPassword: guest
 checkInterval: 3600
 excludeUrls: .*github.com
-URL: https://vitkhab.github.io/search_engine_test_site-XXX/
+URL: https://vitkhab.github.io/search_engine_test_site/
