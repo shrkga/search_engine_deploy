@@ -9,7 +9,6 @@ metadata:
     release: {{ .Release.Name }}
 spec:
   # type: NodePort
-  type: LoadBalancer
   ports:
   - port: {{ .Values.service.externalPort }}
     protocol: TCP

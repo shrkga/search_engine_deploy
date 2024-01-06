@@ -23,6 +23,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
+      - args: {{ .Values.URL | default "https://vitkhab.github.io/search_engine_test_site/" }}
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         name: crawler
         ports:
@@ -46,5 +47,3 @@ spec:
           value: {{ .Values.checkInterval | default "3600" | quote }}
         - name: EXCLUDE_URLS
           value: {{ .Values.excludeUrls | default ".*github.com" }}
-        - name: URL
-          value: {{ .Values.URL | default "https://vitkhab.github.io/search_engine_test_site/" }}
