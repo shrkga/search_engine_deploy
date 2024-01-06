@@ -8,7 +8,7 @@ metadata:
     component: ui
     release: {{ .Release.Name }}
 spec:
-  type: NodePort
+  # type: NodePort
   ports:
   - port: {{ .Values.service.externalPort }}
     protocol: TCP
