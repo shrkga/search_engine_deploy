@@ -6,8 +6,14 @@ metadata:
   labels:
     app: search-engine
     component: ui
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-{{ .Release.Name }}
 spec:
-  ingressClassName: {{ .Values.ingress.class }}
+  ingressClassName: {{ .Values.ingress.class | default "nginx" }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.host | default .Release.Name }}
+    secretName: letsencrypt-{{ template "ui.fullname" . }}
   rules:
   - host: {{ .Values.ingress.host | default .Release.Name }}
     http:

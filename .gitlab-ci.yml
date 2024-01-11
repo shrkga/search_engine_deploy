@@ -1,7 +1,7 @@
 stages:
   - test
   - staging
-  - production
+  - prod
 
 .extended_deploy:
   image: dtzar/helm-kubectl:3.13
@@ -66,13 +66,13 @@ staging:
   except:
     - triggers
 
-production:
-  stage: production
+prod:
+  stage: prod
   variables:
-    KUBE_NAMESPACE: production
+    KUBE_NAMESPACE: prod
   extends: .extended_deploy
   environment:
-    name: production
+    name: prod
     url: http://${host}
   script:
     - deploy
