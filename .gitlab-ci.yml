@@ -6,35 +6,29 @@ stages:
 .extended_deploy:
   image: dtzar/helm-kubectl:3.13
   variables:
-    KUBE_CONTEXT: ${CI_PROJECT_PATH}:yc-k8s
+    KUBE_CONTEXT: otus/search_engine_deploy:yc-k8s
     name: ${CI_ENVIRONMENT_SLUG}
     host: ${name}.${CI_PAGES_DOMAIN}
     reg: ${CI_REGISTRY}/otus
     repo: https://${CI_SERVER_HOST}/otus
   before_script:
-    # ensuring namespace
-    - kubectl config get-contexts
     - kubectl config use-context ${KUBE_CONTEXT}
-    - kubectl describe namespace "${KUBE_NAMESPACE}" || kubectl create namespace "${KUBE_NAMESPACE}"
     - >
       function deploy() {
         mkdir -p search-engine/chats
         helm dep build search-engine
         echo "Deploy helm release $name to $KUBE_NAMESPACE"
 
-        for HCMD in 'helm template' 'helm upgrade --install --wait --atomic'
-        do
-          ${HCMD} \
-            --set ui.ingress.host="$host" \
-            --set ui.image.repository=${reg}/search_engine_ui \
-            --set ui.image.tag="$(curl -fsSL ${repo}/search_engine_ui/raw/main/VERSION)" \
-            --set crawler.image.repository=${reg}/search_engine_crawler \
-            --set crawler.image.tag="$(curl -fsSL ${repo}/search_engine_crawler/raw/main/VERSION)" \
-            --namespace="$KUBE_NAMESPACE" --create-namespace \
-            --version="$CI_PIPELINE_ID-$CI_JOB_ID" \
-            "$name" \
-            search-engine/
-        done
+        helm upgrade --install --wait --atomic \
+          --namespace="$KUBE_NAMESPACE" --create-namespace \
+          --set ui.ingress.host="$host" \
+          --set ui.image.repository=${reg}/search_engine_ui \
+          --set ui.image.tag="$(curl -fsSL ${repo}/search_engine_ui/raw/main/VERSION)" \
+          --set crawler.image.repository=${reg}/search_engine_crawler \
+          --set crawler.image.tag="$(curl -fsSL ${repo}/search_engine_crawler/raw/main/VERSION)" \
+          --version="$CI_PIPELINE_ID-$CI_JOB_ID" \
+          "$name" \
+          search-engine/
       }
 
 test:
@@ -47,8 +41,6 @@ test:
   only:
     - triggers
     - branches
-  except:
-    - main
 
 staging:
   stage: staging
