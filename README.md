@@ -109,3 +109,4 @@ CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
 
 ![Пайплайн UI](img/ui-ci.png)
 
+![Telegram Bot](img/tg-bot.jpg)
