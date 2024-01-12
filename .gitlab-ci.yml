@@ -6,7 +6,6 @@ stages:
 .extended_deploy:
   image: dtzar/helm-kubectl:3.13
   variables:
-    KUBE_CONTEXT: otus/search_engine_deploy:yc-k8s
     name: ${CI_ENVIRONMENT_SLUG}
     host: ${name}.${CI_PAGES_DOMAIN}
     reg: ${CI_REGISTRY}/otus
