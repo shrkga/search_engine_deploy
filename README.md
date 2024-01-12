@@ -83,6 +83,15 @@ CI/CD пайплайн содержит следующие стадии:
 
 Последний шаг `release` выполняется только при внесении изменений в ветку `main`.
 
+При сборке образа в Dockerfile задаются значения по умолчанию для сканируемого URL'а (передается в качестве аргумента командной строки через `CMD`) и маска для исключения (переменная среды `EXCLUDE_URLS`):
+```
+FROM alpine:3.9
+...
+ENV EXCLUDE_URLS=.*github.com
+ENTRYPOINT [ "python3", "-u", "crawler/crawler.py" ]
+CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
+```
+
 ![Пайплайн Crawler](img/crawler-ci.png)
 
 ### Search Engine UI
@@ -98,13 +107,5 @@ CI/CD пайплайн содержит следующие стадии:
 
 Последний шаг `release` выполняется только при внесении изменений в ветку `main`.
 
-При сборке образа в Dockerfile задаются значения по умолчанию для сканируемого URL'а и маска для исключения:
-```
-ENV EXCLUDE_URLS=.*github.com
-
-ENTRYPOINT [ "python3", "-u", "crawler/crawler.py" ]
-CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
-```
-
-![Пайплайн Crawler](img/ui-ci.png)
+![Пайплайн UI](img/ui-ci.png)
 
