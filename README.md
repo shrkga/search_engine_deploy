@@ -69,3 +69,42 @@ helm upgrade --install ingress-nginx ingress-nginx \
 Следующим шагом осуществляется развертывание в кластер дополнения `Cert-manager` и объявление ресурсов центров сертификации (CA) типа `ClusterIssuer`. В данном проекте используется ClusterIssuer т.к. данный ресурс является глобальным объектом кластера, и область его видимости распространяется на все пространства имен.
 
 Чтобы запустился пайплайн автоматического развертывания в кластере Cert-manager, необходимо выполнить `git push` в репозиторий `cert-manager` с тэгом соответствующим версии релиза данного дополнения. На текущий момент Latest релизом является `v1.13.3` (см. <https://github.com/cert-manager/cert-manager/releases/latest>). В результате выполнятся стадии пайплайна `deploy` (развернуть, или обновить Cert-manager) и `apply` (применить манифесты ресурсов ClusterIssuer). Если запушить в репозиторий изменения без тэга, выполняется только стадия `apply`.
+
+### Search Engine Crawler
+
+> Репозиторий <https://gitlab.otus.kga.spb.ru/otus/search_engine_crawler> <br>
+> Образ `registry.otus.kga.spb.ru/otus/search_engine_crawler`
+
+CI/CD пайплайн содержит следующие стадии:
+- `unit-test` -- тестирование и генерация отчета о покрытии кода тестами;
+- `build` -- сборка образа и размещение в Container Registry с тэгом `${CI_COMMIT_SHA}`;
+- `test` -- шаг для тестирования образа, в нашем случае с учетом старого кода и потенциального наличия уязвимостей здесь ничего не делается;
+- `release` -- публикация в Container Registry образа `search_engine_crawler` с тэгами `latest` и версией, взятой из файла `VERSION`.
+
+Последний шаг `release` выполняется только при внесении изменений в ветку `main`.
+
+![Пайплайн Crawler](img/crawler-ci.png)
+
+### Search Engine UI
+
+> Репозиторий <https://gitlab.otus.kga.spb.ru/otus/search_engine_ui> <br>
+> Образ `registry.otus.kga.spb.ru/otus/search_engine_ui`
+
+Аналогично компоненту Crawler, CI/CD пайплайн содержит следующие стадии:
+- `unit-test` -- тестирование и генерация отчета о покрытии кода тестами;
+- `build` -- сборка образа и размещение в Container Registry с тэгом `${CI_COMMIT_SHA}`;
+- `test` -- шаг для тестирования образа, в нашем случае с учетом старого кода и потенциального наличия уязвимостей здесь ничего не делается;
+- `release` -- публикация в Container Registry образа `search_engine_ui` с тэгами `latest` и версией, взятой из файла `VERSION`.
+
+Последний шаг `release` выполняется только при внесении изменений в ветку `main`.
+
+При сборке образа в Dockerfile задаются значения по умолчанию для сканируемого URL'а и маска для исключения:
+```
+ENV EXCLUDE_URLS=.*github.com
+
+ENTRYPOINT [ "python3", "-u", "crawler/crawler.py" ]
+CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
+```
+
+![Пайплайн Crawler](img/ui-ci.png)
+
