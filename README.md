@@ -109,4 +109,44 @@ CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
 
 ![Пайплайн UI](img/ui-ci.png)
 
-![Telegram Bot](img/tg-bot.jpg)
+### Search Engine Deploy
+
+> Репозиторий <https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy>
+
+Данный проект содержит финальное приложение `search-engine` в виде Helm Chart'а, состоящее из модулей (микросервисов) [`crawler`](#search-engine-crawler), [`ui`](#search-engine-ui), `mongodb`, `rabbitmq`. Каждый модуль описан в виде самостоятельного Helm Chart'а, которые подключаются в основной Chart в качестве зависимостей через `requirements.yaml`.
+
+#### Chart crawler
+
+> https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/crawler
+
+Разворачиваются объекты `Deployment` и `Service`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, параметры подключения к MongoDB и RabbitMQ, а также значения по умолчанию переменных `CHECK_INTERVAL`, `EXCLUDE_URLS` и `URL`.
+
+В аннотациях метаданных `Service` задаются параметры сбора метрик для Prometheus:
+```
+...
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "{{ .Values.service.externalPort }}"
+...
+```
+
+#### Chart ui
+
+> https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/ui
+
+Разворачиваются объекты `Deployment`, `Service` и `Ingress`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, класс объекта `Ingress`, параметры подключения к MongoDB.
+
+В аннотациях метаданных `Service` задаются параметры сбора метрик для Prometheus:
+```
+...
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "{{ .Values.service.externalPort }}"
+...
+```
+
+<!-- ![Telegram Bot](img/tg-bot.jpg) -->
