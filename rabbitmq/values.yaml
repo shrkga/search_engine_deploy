@@ -1,0 +1,4 @@
+---
+image:
+  repository: rabbitmq
+  tag: 3.7-alpine

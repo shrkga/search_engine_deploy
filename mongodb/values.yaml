@@ -1,0 +1,4 @@
+---
+image:
+  repository: mongo
+  tag: 4

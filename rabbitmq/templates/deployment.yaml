@@ -23,5 +23,5 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - image: rabbitmq:3.7-alpine
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         name: rabbit

@@ -23,7 +23,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - image: mongo:4
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         name: mongo
         volumeMounts:
         - name: mongo-data

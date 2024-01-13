@@ -117,8 +117,8 @@ CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
 
 CI/CD пайплайн содержит следующие стадии:
 - `test` -- шаг для тестирования, в нашем случае с учетом старого кода и потенциального наличия уязвимостей здесь ничего не делается;
-- `staging` -- развертывание приложения в одноименные GitLab Environment и Kubernetes Namespace `staging`. Выполняется только при публикации в ветку `main`. URL адрес для окружения формируется из встроенных переменных `https://${CI_ENVIRONMENT_SLUG}.${CI_PAGES_DOMAIN}`. Т.е. в нашем случае адрес `staging` окружения <https://staging.pages.otus.kga.spb.ru/>. Для  окружения автоматически генерируется Let's Entrypt TLS сертификат через `Cert-manager`.
-- `prod` -- стадия выполняется вручную. Аналогично предыдущему шагу, выполняется развертывание приложения в одноименные GitLab Environment и Kubernetes Namespace `prod`. URL <https://prod.pages.otus.kga.spb.ru/> является адресом продакшн среды.
+- `staging` -- развертывание приложения в одноименные GitLab Environment и Kubernetes Namespace `staging`. Выполняется только при публикации в ветку `main`. URL адрес для окружения формируется из встроенных переменных `https://${CI_ENVIRONMENT_SLUG}.${CI_PAGES_DOMAIN}`. Т.е. в нашем случае адрес `staging` окружения <https://staging.pages.otus.kga.spb.ru/>. Для окружения автоматически генерируется Let's Entrypt TLS сертификат через `Cert-manager`.
+- `prod` -- стадия выполняется вручную. Аналогично предыдущему шагу, выполняется развертывание приложения в одноименные GitLab Environment и Kubernetes Namespace `prod`. URL <https://prod.pages.otus.kga.spb.ru/> является адресом продакшн среды. Для окружения автоматически генерируется Let's Entrypt TLS сертификат через `Cert-manager`.
 
 ![Environments](img/environments.png)
 
@@ -168,9 +168,7 @@ ingress.networking.k8s.io/prod-ui   nginx   prod.pages.otus.kga.spb.ru   10.129.
 
 > https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/crawler
 
-Разворачиваются объекты `Deployment` и `Service`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, параметры подключения к MongoDB и RabbitMQ, а также значения по умолчанию переменных `CHECK_INTERVAL`, `EXCLUDE_URLS` и `URL`.
-
-В имена всех сущностей добавляется в качестве префикса имя текущего окружения.
+Разворачиваются объекты `Deployment` и `Service`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, параметры подключения к MongoDB и RabbitMQ, а также значения по умолчанию переменных `CHECK_INTERVAL`, `EXCLUDE_URLS` и `URL`. В имена всех сущностей добавляется в качестве префикса имя текущего окружения (staging, prod).
 
 В аннотациях метаданных `Service` задаются параметры сбора метрик для Prometheus:
 ```
@@ -187,9 +185,7 @@ metadata:
 
 > https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/ui
 
-Разворачиваются объекты `Deployment`, `Service` и `Ingress`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, класс объекта `Ingress`, параметры подключения к MongoDB.
-
-В имена всех сущностей добавляется в качестве префикса имя текущего окружения.
+Разворачиваются объекты `Deployment`, `Service` и `Ingress`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, класс объекта `Ingress`, параметры подключения к MongoDB. В имена всех сущностей добавляется в качестве префикса имя текущего окружения (staging, prod).
 
 В аннотациях метаданных `Service` задаются параметры сбора метрик для Prometheus:
 ```
@@ -201,5 +197,23 @@ metadata:
     prometheus.io/port: "{{ .Values.service.externalPort }}"
 ...
 ```
+
+#### Chart mongodb
+
+> https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/mongodb
+
+Разворачиваются объекты `Deployment` и `Service`. Используется официальный образ `mongo:4`. В имена всех сущностей добавляется в качестве префикса имя текущего окружения (staging, prod).
+
+#### Chart rabbitmq
+
+> https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/rabbitmq
+
+Разворачиваются объекты `Deployment` и `Service`. Используется официальный образ `rabbitmq:3.7-alpine`. В имена всех сущностей добавляется в качестве префикса имя текущего окружения (staging, prod).
+
+## Мониторинг, метрики, логирование, оповещения
+
+> Репозиторий <https://gitlab.otus.kga.spb.ru/otus/monitoring>
+
+
 
 <!-- ![Telegram Bot](img/tg-bot.jpg) -->
