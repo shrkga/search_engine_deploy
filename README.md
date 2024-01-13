@@ -115,11 +115,62 @@ CMD [ "https://vitkhab.github.io/search_engine_test_site/" ]
 
 Данный проект содержит финальное приложение `search-engine` в виде Helm Chart'а, состоящее из модулей (микросервисов) [`crawler`](#search-engine-crawler), [`ui`](#search-engine-ui), `mongodb`, `rabbitmq`. Каждый модуль описан в виде самостоятельного Helm Chart'а, которые подключаются в основной Chart в качестве зависимостей через `requirements.yaml`.
 
+CI/CD пайплайн содержит следующие стадии:
+- `test` -- шаг для тестирования, в нашем случае с учетом старого кода и потенциального наличия уязвимостей здесь ничего не делается;
+- `staging` -- развертывание приложения в одноименные GitLab Environment и Kubernetes Namespace `staging`. Выполняется только при публикации в ветку `main`. URL адрес для окружения формируется из встроенных переменных `https://${CI_ENVIRONMENT_SLUG}.${CI_PAGES_DOMAIN}`. Т.е. в нашем случае адрес `staging` окружения <https://staging.pages.otus.kga.spb.ru/>. Для  окружения автоматически генерируется Let's Entrypt TLS сертификат через `Cert-manager`.
+- `prod` -- стадия выполняется вручную. Аналогично предыдущему шагу, выполняется развертывание приложения в одноименные GitLab Environment и Kubernetes Namespace `prod`. URL <https://prod.pages.otus.kga.spb.ru/> является адресом продакшн среды.
+
+![Environments](img/environments.png)
+
+```
+$ kubectl get all,cm,secret,ing -n prod
+
+NAME                                READY   STATUS    RESTARTS      AGE
+pod/prod-rabbitmq-97574f8f9-hpdpp   1/1     Running   1 (21h ago)   45h
+pod/prod-mongodb-85564b5965-m7t8t   1/1     Running   1 (21h ago)   45h
+pod/prod-crawler-7874446cd5-qzjf9   1/1     Running   0             21h
+pod/prod-ui-66746bf954-s5nwt        1/1     Running   0             21h
+
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)     AGE
+service/prod-rabbitmq   ClusterIP   10.43.183.193   <none>        5672/TCP    45h
+service/prod-mongodb    ClusterIP   10.43.176.192   <none>        27017/TCP   45h
+service/prod-crawler    ClusterIP   10.43.81.196    <none>        8000/TCP    45h
+service/prod-ui         ClusterIP   10.43.13.195    <none>        8000/TCP    45h
+
+NAME                            READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/prod-rabbitmq   1/1     1            1           45h
+deployment.apps/prod-mongodb    1/1     1            1           45h
+deployment.apps/prod-crawler    1/1     1            1           45h
+deployment.apps/prod-ui         1/1     1            1           45h
+
+NAME                                      DESIRED   CURRENT   READY   AGE
+replicaset.apps/prod-rabbitmq-97574f8f9   1         1         1       45h
+replicaset.apps/prod-mongodb-85564b5965   1         1         1       45h
+replicaset.apps/prod-crawler-7874446cd5   1         1         1       21h
+replicaset.apps/prod-ui-66746bf954        1         1         1       21h
+replicaset.apps/prod-crawler-58769554f4   0         0         0       45h
+replicaset.apps/prod-ui-687667dfcc        0         0         0       45h
+
+NAME                         DATA   AGE
+configmap/kube-root-ca.crt   1      45h
+
+NAME                                TYPE                 DATA   AGE
+secret/letsencrypt-prod-ui          kubernetes.io/tls    2      45h
+secret/sh.helm.release.v1.prod.v1   helm.sh/release.v1   1      45h
+secret/sh.helm.release.v1.prod.v2   helm.sh/release.v1   1      27h
+secret/sh.helm.release.v1.prod.v3   helm.sh/release.v1   1      21h
+
+NAME                                CLASS   HOSTS                        ADDRESS       PORTS     AGE
+ingress.networking.k8s.io/prod-ui   nginx   prod.pages.otus.kga.spb.ru   10.129.0.23   80, 443   45h
+```
+
 #### Chart crawler
 
 > https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/crawler
 
 Разворачиваются объекты `Deployment` и `Service`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, параметры подключения к MongoDB и RabbitMQ, а также значения по умолчанию переменных `CHECK_INTERVAL`, `EXCLUDE_URLS` и `URL`.
+
+В имена всех сущностей добавляется в качестве префикса имя текущего окружения.
 
 В аннотациях метаданных `Service` задаются параметры сбора метрик для Prometheus:
 ```
@@ -137,6 +188,8 @@ metadata:
 > https://gitlab.otus.kga.spb.ru/otus/search_engine_deploy/-/tree/main/ui
 
 Разворачиваются объекты `Deployment`, `Service` и `Ingress`. В `values.yaml` определены внешний и внутренний порты сервиса, репозиторий и тэг образа по умолчанию, класс объекта `Ingress`, параметры подключения к MongoDB.
+
+В имена всех сущностей добавляется в качестве префикса имя текущего окружения.
 
 В аннотациях метаданных `Service` задаются параметры сбора метрик для Prometheus:
 ```
