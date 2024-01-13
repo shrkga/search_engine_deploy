@@ -1,5 +1,7 @@
 # Search Engine Deploy
 
+> **Приложение живет по адресу <https://prod.pages.otus.kga.spb.ru/>**
+
 Репозиторий содержит код и CI/CD pipeline для развертывание приложения в виде Helm Chart'а. Доставка осуществляется в кластер Kubernetes.
 
 Код микросервисов `crawler` и `ui` вместе с пайплайнами сборки находятся в собственных GitLab репозиториях `search_engine_crawler` и `search_engine_ui` соответственно.
